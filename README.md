@@ -12,7 +12,7 @@ If you're running many AI agents, terminals, browsers, and monitoring tools simu
 
 Modern AI-assisted workflows often involve a dozen or more concurrent windows: multiple agent terminals, browser tabs showing outputs, log viewers, chat interfaces, email, and monitoring dashboards — all running in parallel on a wide display. Manually dragging and resizing these every session is friction that compounds over time.
 
-Scaffold solves this with a visual drag-and-drop organizer built specifically for ultrawide monitors (tested on the Dell U4924DW 49"). You define a column grid, split columns into top/bottom rows, drag your open windows into the right zones, and apply everything at once. The grid config and window layouts persist so restoring your exact setup takes one click.
+Scaffold solves this with a visual drag-and-drop organizer built specifically for ultrawide monitors (. You define a column grid, split columns into top/bottom rows, drag your open windows into the right zones, and apply everything at once. The grid config and window layouts persist so restoring your exact setup takes one click.
 
 ---
 
