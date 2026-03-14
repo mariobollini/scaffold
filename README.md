@@ -4,8 +4,6 @@
 
 If you're running many AI agents, terminals, browsers, and monitoring tools simultaneously on a large display, Scaffold keeps every window exactly where it belongs. Define a column grid, drag windows into zones, hit Apply — and your whole workspace snaps into place in one shot. Save it as a named profile and restore it any time.
 
-![Scaffold Organizer UI](docs/screenshot.png)
-
 ---
 
 ## Why Scaffold
@@ -22,7 +20,7 @@ Scaffold solves this with a visual drag-and-drop organizer built specifically fo
 - **Flexible column grid** — add/remove columns, merge adjacent columns, split columns into top/bottom rows
 - **Layout profiles** — save and restore named snapshots of all window positions
 - **Menu bar app** — lives in your menu bar with no Dock icon; optional Open at Login
-- **Adjustable window gap** — slider from 0 to 32px, persisted to config
+- **Adjustable window gap** — slider from 0–32px, persisted to config
 - **CLI** — `scaffold snap`, `scaffold save-layout`, `scaffold restore-layout` for scripting
 - **Zero native dependencies** — pure Python + PyObjC; no Xcode or Electron required
 
@@ -39,106 +37,104 @@ Scaffold solves this with a visual drag-and-drop organizer built specifically fo
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/scaffold.git
+git clone https://github.com/mariobollini/scaffold.git
 cd scaffold
 
-# Create venv and install
 uv venv
 source .venv/bin/activate
 uv pip install -e .
 
-# Add to PATH (add to ~/.zshrc to make permanent)
-export PATH="$PWD/.venv/bin:$PATH"
+# Add to PATH permanently
+echo 'export PATH="$HOME/dev/scaffold/.venv/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
 ```
 
-### First-run setup
+### Grant Accessibility permission
 
-**1. Grant Accessibility permission**
-
-Scaffold uses the macOS Accessibility API to move windows. On first run it will prompt automatically. If it doesn't:
+Scaffold uses the macOS Accessibility API to move windows. On first launch it will prompt automatically. If the prompt doesn't appear:
 
 1. Open **System Settings → Privacy & Security → Accessibility**
-2. Click **+** and add your terminal app (Terminal, iTerm2) or the Python binary
+2. Click **+** and add your terminal app or the Python binary from `.venv/bin/python`
 3. Enable the toggle
 
-**2. Create your config**
-
-```bash
-mkdir -p ~/.scaffold
-cp config.example.yaml ~/.scaffold/config.yaml
-```
-
-Edit `~/.scaffold/config.yaml` — set your display name and column layout. To find your display's exact name:
-
-```bash
-python3 -c "from Cocoa import NSScreen; [print(s.localizedName()) for s in NSScreen.screens()]"
-```
+That's it — no manual config file needed. Scaffold creates `~/.scaffold/config.yaml` with a working 4-column default on first run.
 
 ---
 
-## Config reference
+## Getting started
 
-`~/.scaffold/config.yaml`:
-
-```yaml
-display:
-  name: "DELL U4924DW"   # substring matched against NSScreen.localizedName
-  columns: 3             # number of columns in the grid
-  gap: 8                 # pixels between zone edges
-  margin: 0              # pixels inset from screen edges
-
-zones:
-  col-1:  { cols: [1],    rows: full   }   # full-height left column
-  col-2:  { cols: [2],    rows: full   }   # center column
-  col-3t: { cols: [3],    rows: top    }   # right column, top half
-  col-3b: { cols: [3],    rows: bottom }   # right column, bottom half
-```
-
-**`cols`** — 1-indexed column numbers. `[1, 2]` spans two adjacent columns.
-**`rows`** — `full`, `top` (upper half), or `bottom` (lower half).
-
-The organizer UI can modify this config live — adding/removing columns, merging, and splitting all write back to `config.yaml` automatically.
-
----
-
-## Usage
-
-### Visual Organizer (recommended)
-
-```bash
-scaffold organize
-```
-
-Opens a browser tab with the drag-and-drop organizer.
-
-- **Drag** window tiles from the right panel into grid zones
-- **Apply** — all assigned windows snap to their zones simultaneously
-- **Split** — click a zone to divide it into top/bottom rows
-- **Merge** — click two adjacent zones to combine them into a wider span
-- **+ / ×** — add or remove columns from the grid
-- **Save / Load** — named layout profiles stored in `~/.scaffold/layouts/`
-- **Window Gap slider** — adjust spacing between windows (0–32px)
-
-**Tile-first workflow:** click a zone first, then click Split or Merge — the buttons relabel to show what will happen (Unsplit/Unmerge) before you commit.
-
-### Menu bar app
+### Option A — Menu bar (recommended for daily use)
 
 ```bash
 scaffold menubar
 ```
 
-Runs Scaffold as a persistent menu bar icon (no Dock icon). Menu options:
-- **Open Organizer** — starts the server and opens the browser
-- **Open at Login** — installs/removes a LaunchAgent so Scaffold starts at every login
-- **Quit Scaffold**
+This is the best way to run Scaffold day-to-day. A grid icon appears in your menu bar. No terminal window needs to stay open. Use **Open at Login** from the menu to start Scaffold automatically at every login.
 
-### CLI commands
+### Option B — One-off from the terminal
+
+```bash
+scaffold organize
+```
+
+Opens the organizer in the browser and runs the server in your terminal session. The server stays alive as long as the terminal is open. Useful for a first look or occasional use without keeping the menu bar item running.
+
+---
+
+## The Organizer
+
+Open it from the menu bar icon or via `scaffold organize`.
+
+- **Drag** window tiles from the right panel into grid zones
+- **Apply** — all assigned windows snap to their zones simultaneously
+- **Split** — click a zone (or click a zone then Split) to divide it into top/bottom rows
+- **Merge** — click two adjacent zones to combine them into a wider span
+- **+ / ×** — add or remove columns; changes save automatically
+- **Save / Load** — named layout profiles in `~/.scaffold/layouts/`
+- **Window Gap slider** — adjust spacing between windows (0–32px)
+
+**Tile-first workflow:** click a zone first, then click Split or Merge — the buttons relabel to show exactly what will happen (Unsplit / Unmerge) before you commit.
+
+---
+
+## Config reference
+
+Auto-created at `~/.scaffold/config.yaml` on first run:
+
+```yaml
+display:
+  name: ""      # substring match against display name; empty = primary display
+  columns: 4    # number of columns in the grid
+  gap: 8        # pixels between zone edges
+  margin: 0     # pixels inset from screen edges
+
+zones:
+  col-1:  { cols: [1], rows: full   }
+  col-2:  { cols: [2], rows: full   }
+  col-3:  { cols: [3], rows: full   }
+  col-4t: { cols: [4], rows: top    }
+  col-4b: { cols: [4], rows: bottom }
+```
+
+**`cols`** — 1-indexed column numbers. `[1, 2]` spans two adjacent columns.
+**`rows`** — `full`, `top` (upper half), or `bottom` (lower half).
+**`name`** — leave empty to use the primary display. To target a specific monitor, set a substring of its name. Find yours with:
+
+```bash
+python3 -c "from Cocoa import NSScreen; [print(s.localizedName()) for s in NSScreen.screens()]"
+```
+
+The organizer UI writes back to this file automatically when you add/remove columns, merge/split zones, or adjust the gap slider.
+
+---
+
+## CLI reference
 
 ```bash
 # Snap a window to a named zone
-scaffold snap col-1                         # frontmost window → col-1
-scaffold snap col-2 Terminal                # frontmost Terminal window → col-2
-scaffold snap col-3t Chrome "Claude.ai"     # Chrome tab by title → top of col-3
+scaffold snap col-1                         # frontmost window
+scaffold snap col-2 Terminal                # frontmost Terminal window
+scaffold snap col-4t Chrome "Claude.ai"     # Chrome tab by title
 
 # Layout profiles
 scaffold save-layout morning                # snapshot all windows
@@ -148,38 +144,32 @@ scaffold list-layouts                       # show saved profiles
 
 ---
 
-## Login item (manual setup)
+## Login item
 
-If you prefer not to use `scaffold menubar`, you can install a LaunchAgent directly:
+The easiest way: run `scaffold menubar` and select **Open at Login** from the menu. It installs a LaunchAgent and the checkmark persists across launches.
+
+To install manually:
 
 ```bash
-# Create the plist
-cat > ~/Library/LaunchAgents/com.scaffold.menubar.plist << EOF
+# Replace /path/to with your actual venv path
+cat > ~/Library/LaunchAgents/com.scaffold.menubar.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key>
-  <string>com.scaffold.menubar</string>
+  <key>Label</key><string>com.scaffold.menubar</string>
   <key>ProgramArguments</key>
   <array>
     <string>/path/to/.venv/bin/python</string>
-    <string>-m</string>
-    <string>scaffold</string>
-    <string>menubar</string>
+    <string>-m</string><string>scaffold</string><string>menubar</string>
   </array>
-  <key>RunAtLoad</key>
-  <true/>
+  <key>RunAtLoad</key><true/>
 </dict>
 </plist>
 EOF
 
-# Load immediately (no restart required)
 launchctl load ~/Library/LaunchAgents/com.scaffold.menubar.plist
-
-# To unload
-launchctl unload ~/Library/LaunchAgents/com.scaffold.menubar.plist
 ```
 
 ---
@@ -190,44 +180,39 @@ launchctl unload ~/Library/LaunchAgents/com.scaffold.menubar.plist
 |------|----------|
 | `~/.scaffold/config.yaml` | Zone grid, display settings, gap |
 | `~/.scaffold/layouts/<name>.json` | Saved window layout profiles |
-| `~/.scaffold/menubar.log` | Menu bar app stdout/stderr log |
+| `~/.scaffold/menubar.log` | Menu bar app log |
 | `~/Library/LaunchAgents/com.scaffold.menubar.plist` | Login item (if enabled) |
 
 ---
 
 ## Troubleshooting
 
-**"No windows found"** — Click ↻ Refresh in the organizer. If still empty, check Accessibility permission (System Settings → Privacy & Security → Accessibility) and make sure your terminal or Python is listed.
+**"No windows found"** — Click ↻ Refresh. If still empty, check Accessibility permission and make sure your terminal or Python binary is listed.
 
-**Windows don't move after Apply** — Accessibility permission may be granted for Terminal but not for the Python binary. Check `/api/debug` in the browser for diagnostics (`http://localhost:7890/api/debug`).
+**Windows don't move after Apply** — Accessibility may be granted for Terminal but not for the Python binary in your venv. Check `http://localhost:7890/api/debug` for diagnostics.
 
-**Display name not matched** — Run the Python one-liner above to find the exact name, then update `display.name` in `config.yaml`.
+**Wrong display targeted** — Set `display.name` in `config.yaml` to a substring of your monitor's name (find it with the one-liner above).
 
-**Organizer shows stale UI** — Hard-refresh with ⌘⇧R in Safari/Chrome to bypass cache.
+**Organizer shows stale UI** — Hard-refresh with ⌘⇧R to bypass cache.
 
-**Chrome windows not matched by title** — Scaffold matches Chrome by the active tab's title. Make sure the target tab is frontmost in that window.
+**Chrome windows not matched by title** — Scaffold matches Chrome by the active tab's title; make sure the target tab is frontmost in that window.
 
 ---
 
 ## How it works
 
-Scaffold uses two macOS APIs:
-
-- **Accessibility API (AXUIElement)** — reads window titles, positions, and sizes; sets position/size for each window. Requires Accessibility permission.
-- **Quartz CGWindowList** — cross-references visible on-screen windows to filter out background system windows (e.g. Finder's desktop layer).
-
-The organizer runs a local Flask/Waitress HTTP server (`localhost:7890`) serving a single-page HTML UI. Window moves happen server-side via Python when you click Apply; the browser just sends the assignment map.
+- **Accessibility API (AXUIElement)** — reads window titles/positions/sizes and sets frames. Requires Accessibility permission.
+- **Quartz CGWindowList** — cross-references on-screen windows to filter out background system windows (e.g. Finder's desktop layer).
+- **Flask/Waitress server** — runs locally on port 7890; the organizer is a single-page HTML file served from it. Window moves happen server-side on Apply.
 
 ---
 
-## Contributing
-
-Issues and PRs welcome. The codebase is intentionally small — no framework, no abstraction layers, just Python + PyObjC + a self-contained HTML file.
+## Project layout
 
 ```
 scaffold/
 ├── __main__.py          # CLI entry point
-├── config.py            # config loading, paths
+├── config.py            # config loading, auto-create defaults
 ├── windows.py           # AX window enumeration and frame setting
 ├── zones.py             # zone geometry (column grid → pixel rects)
 ├── layout.py            # save/restore layout profiles
@@ -235,9 +220,9 @@ scaffold/
 ├── static/
 │   └── organizer.html   # entire organizer UI (single file)
 └── cli/
-    ├── organize.py      # `scaffold organize` command
-    ├── menubar.py       # `scaffold menubar` command
-    ├── snap.py          # `scaffold snap` command
+    ├── organize.py      # `scaffold organize`
+    ├── menubar.py       # `scaffold menubar` + login item
+    ├── snap.py          # `scaffold snap`
     ├── save_layout.py
     ├── restore_layout.py
     └── list_layouts.py
@@ -245,6 +230,12 @@ scaffold/
 
 ---
 
+## Contributing
+
+Issues and PRs welcome. The codebase is intentionally small — no framework, no abstraction layers beyond what's needed.
+
+---
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
