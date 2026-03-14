@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scaffold Organizer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  background: #161616; color: #e0e0e0;
+  height: 100vh; display: flex; flex-direction: column;
+  overflow: hidden; font-size: 13px;
+}
+
+/* ── Header ── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; background: #1f1f1f;
+  border-bottom: 1px solid #2e2e2e; flex-shrink: 0; gap: 10px;
+}
+.header-left  { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+/* Icon: 3-column grid, rightmost split */
+.logo svg { display: block; }
+
+h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+
+.header-sep {
+  width: 1px; height: 18px; background: #2e2e2e; flex-shrink: 0; margin: 0 4px;
+}
+
+/* ── Settings panel ── */
+.right-col {
+  width: 230px; flex-shrink: 0; display: flex; flex-direction: column;
+}
+.windows-panel {
+  flex: 1; min-height: 0; overflow: hidden;
+}
+.settings-panel {
+  flex-shrink: 0; border-top: 1px solid #2e2e2e;
+  padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 14px;
+}
+.settings-header { display: flex; align-items: center; flex-shrink: 0; }
+.settings-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: #777;
+}
+
+.settings-section { display: flex; flex-direction: column; gap: 7px; }
+.settings-section-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: #555;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.settings-desc { font-size: 11px; color: #3a3a3a; line-height: 1.55; }
+.settings-row  { display: flex; gap: 5px; }
+
+.layout-name-input {
+  flex: 1; background: #242424; border: 1px solid #333; border-radius: 4px;
+  color: #666; font-size: 11px; font-family: inherit;
+  padding: 5px 8px; outline: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+.layout-name-input:hover { border-color: #484848; color: #aaa; }
+.layout-name-input:focus { border-color: #4f93f7; color: #aaa; }
+.layout-name-input::placeholder { color: #3a3a3a; }
+
+.profile-action {
+  background: #242424; border: 1px solid #333; border-radius: 4px;
+  color: #666; font-size: 11px; cursor: pointer;
+  padding: 5px 10px; font-family: inherit; line-height: 1;
+  transition: border-color 0.1s, color 0.1s, background 0.1s; flex-shrink: 0;
+}
+.profile-action:hover { border-color: #484848; color: #aaa; }
+
+.layout-select {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; background: #242424; border: 1px solid #333; border-radius: 4px;
+  color: #666; font-size: 11px; font-family: inherit;
+  cursor: pointer; outline: none; padding: 5px 10px;
+  transition: border-color 0.1s, color 0.1s, background 0.1s;
+}
+.layout-select:hover { border-color: #484848; color: #aaa; }
+.layout-select option { background: #1a1a1a; color: #ccc; }
+
+.profile-feedback { font-size: 10px; transition: opacity 0.3s; }
+.profile-feedback.ok  { color: #4f93f7; }
+.profile-feedback.err { color: #ef5350; }
+
+/* Gap slider */
+.gap-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 3px; border-radius: 2px; outline: none; cursor: pointer;
+  background: linear-gradient(to right, #4f93f7 0%, #4f93f7 var(--pct, 25%), #333 var(--pct, 25%), #333 100%);
+}
+.gap-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: #4f93f7; border: 2px solid #1a2535; cursor: pointer;
+  transition: background 0.1s;
+}
+.gap-slider::-webkit-slider-thumb:hover { background: #7ab8ff; }
+.gap-value { font-size: 10px; color: #555; font-variant-numeric: tabular-nums; }
+
+/* ── Main workspace ── */
+.workspace { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+
+.zones-panel {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 12px 16px 16px; border-right: 1px solid #2e2e2e;
+  overflow: hidden; min-width: 0;
+}
+.windows-panel {
+  display: flex; flex-direction: column; padding: 14px 16px 16px; overflow: hidden; gap: 8px;
+}
+.windows-header {
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.windows-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: #777;
+}
+.btn-icon {
+  background: transparent; border: none; color: #555; cursor: pointer;
+  font-size: 15px; padding: 2px 5px; border-radius: 4px; line-height: 1;
+  transition: color 0.12s, background 0.12s;
+}
+.btn-icon:hover { color: #ccc; background: #2a2a2a; }
+.windows-desc {
+  font-size: 11px; color: #3e3e3e; line-height: 1.6; flex-shrink: 0;
+}
+
+/* ── Mode buttons (in header) ── */
+.mode-btn {
+  background: #242424; border: 1px solid #333; border-radius: 4px;
+  color: #666; padding: 5px 10px; font-size: 11px; cursor: pointer;
+  transition: border-color 0.1s, color 0.1s, background 0.1s; white-space: nowrap;
+}
+.mode-btn:hover:not(.active) { border-color: #484848; color: #aaa; }
+.mode-btn.active.split-mode { background: #1a2535; border-color: #4f93f7; color: #7ab8ff; }
+.mode-btn.active.merge-mode { background: #1a2535; border-color: #4f93f7; color: #7ab8ff; }
+/* Both buttons pulse blue when a tile is pre-selected */
+.mode-btn.cued { background: #1a2535; border-color: #4f93f760; color: #7ab8ff99; }
+
+/* mode hint — inline in header, hidden when no mode active */
+.mode-hint { font-size: 10px; color: #4f93f7; white-space: nowrap; display: none; }
+.mode-hint.visible { display: block; }
+
+/* ── Zone area (grid + add-col button) ── */
+.zone-area { display: flex; gap: 5px; flex: 1; min-height: 0; }
+
+.zone-grid { display: grid; gap: 5px; flex: 1; min-width: 0; min-height: 0; }
+
+.add-col-btn {
+  width: 26px; flex-shrink: 0;
+  background: transparent; border: 1px dashed #3a3a3a;
+  border-radius: 6px; color: #555; cursor: pointer;
+  font-size: 18px; display: flex; align-items: center; justify-content: center;
+  transition: color 0.12s, border-color 0.12s;
+  line-height: 1;
+}
+.add-col-btn:hover { color: #bbb; border-color: #777; }
+
+/* ── Zone tiles ── */
+.zone {
+  background: #1e1e1e; border: 2px dashed #2c2c2c; border-radius: 8px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 8px 6px;
+  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+  overflow: hidden; min-width: 0; min-height: 0;
+  cursor: pointer; position: relative;
+}
+.zone.dragover { border-color: #4f93f7; border-style: solid; background: #172035; }
+.zone.assigned { border-color: #3a5e8a; border-style: solid; background: #162030; }
+/* Tile pre-selected (click tile first, then Split/Merge) */
+.zone.zone-tile-selected {
+  border-style: solid !important; border-color: #484848 !important;
+  background: #252525 !important;
+}
+
+/* Delete button — top-left, dim by default, bright on hover */
+.zone-delete-btn {
+  position: absolute; top: 5px; left: 5px;
+  width: 18px; height: 18px;
+  background: transparent; border: none; border-radius: 3px;
+  color: #484848; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0; line-height: 1; z-index: 2;
+  transition: color 0.1s, background 0.1s;
+}
+.zone-delete-btn:hover { color: #ef5350; background: rgba(239,83,80,0.12); }
+
+/* Mode interactions — all zones clickable in both modes */
+.zone-grid.mode-split .zone:hover,
+.zone-grid.mode-merge .zone:hover { border-color: #4f93f7; background: #172035; }
+
+.zone.zone-merge-selected {
+  border-style: solid !important; border-color: #4f93f7 !important;
+  background: #172035 !important; box-shadow: 0 0 0 1px #4f93f740;
+}
+.zone.zone-merge-target {
+  border-style: dashed !important; border-color: #4f93f760 !important;
+}
+
+/* Result states (persistent after apply) */
+.zone.result-error {
+  border-style: solid !important; border-color: #7a3030 !important;
+  background: #221515 !important;
+}
+
+/* Apply animations */
+@keyframes zone-pulse {
+  0%, 100% { border-color: #4f93f730; } 50% { border-color: #4f93f7aa; }
+}
+@keyframes flash-ok {
+  0%   { background: #1a3a5a; border-color: #4f93f7; box-shadow: 0 0 12px #4f93f730; }
+  100% { }
+}
+@keyframes flash-err {
+  0%   { background: #3a1515; border-color: #c04040; box-shadow: 0 0 12px #c0404030; }
+  100% { }
+}
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+.zone.zone-applying { border-style: solid; animation: zone-pulse 0.8s ease-in-out infinite; }
+.zone.flash-ok  { animation: flash-ok  0.9s ease-out forwards; }
+.zone.flash-err { animation: flash-err 0.9s ease-out forwards; }
+
+.btn.btn-applying { position: relative; color: transparent !important; pointer-events: none; }
+.btn.btn-applying::after {
+  content: ''; position: absolute;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+}
+
+/* Zone text */
+.zone-name {
+  font-size: 14px; font-weight: 600; color: #4a4a4a;
+  text-align: center; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.zone.assigned .zone-name { color: #5a90c0; }
+.zone-window {
+  font-size: 12px; color: #4a7aaa; text-align: center; margin-top: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  line-height: 1.3;
+}
+.zone-status {
+  position: absolute; top: 5px; right: 7px; font-size: 12px; line-height: 1;
+}
+.zone-status.ok  { color: #4f93f7; }
+.zone-status.err { color: #ef5350; }
+
+/* ── Window list ── */
+.window-list {
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 5px; min-height: 0;
+}
+.window-list::-webkit-scrollbar { width: 5px; }
+.window-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+.win-card {
+  background: #222; border: 1px solid #2e2e2e; border-radius: 7px;
+  padding: 9px 11px; cursor: grab; user-select: none;
+  transition: border-color 0.12s, background 0.12s, opacity 0.15s; flex-shrink: 0;
+}
+.win-card:hover:not(.dragging) { border-color: #444; background: #272727; }
+.win-card:active { cursor: grabbing; }
+.win-card.dragging { opacity: 0.35; }
+.win-card.assigned { opacity: 0.35; }
+.win-app   { font-size: 12px; font-weight: 600; color: #ccc; line-height: 1.3; }
+.win-title { font-size: 11px; color: #555; margin-top: 2px; line-height: 1.3;
+             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.empty-state { color: #3a3a3a; font-size: 12px; text-align: center; margin-top: 20px; line-height: 1.8; }
+
+/* Loading shimmer */
+@keyframes shimmer {
+  0%   { opacity: 0.3; }
+  50%  { opacity: 0.7; }
+  100% { opacity: 0.3; }
+}
+.win-skeleton {
+  background: #222; border: 1px solid #2a2a2a; border-radius: 7px;
+  padding: 9px 11px; flex-shrink: 0;
+}
+.win-skeleton-app   { height: 12px; width: 55%; background: #2e2e2e; border-radius: 3px; animation: shimmer 1.4s ease-in-out infinite; }
+.win-skeleton-title { height: 10px; width: 80%; background: #282828; border-radius: 3px; margin-top: 6px; animation: shimmer 1.4s ease-in-out infinite 0.2s; }
+
+/* ── Buttons ── */
+.btn {
+  border: none; border-radius: 6px; padding: 6px 14px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: background 0.12s, color 0.12s, opacity 0.12s; white-space: nowrap;
+}
+.btn:disabled { opacity: 0.3; cursor: default; }
+.btn-primary { background: #4f93f7; color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #3f83e7; }
+.btn-secondary { background: transparent; color: #aaa; border: 1px solid #333; padding: 5px 12px; }
+.btn-secondary:hover:not(:disabled) { border-color: #555; color: #ddd; }
+.btn-ghost { background: transparent; color: #444; padding: 5px 10px; }
+.btn-ghost:hover { color: #999; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <!-- Icon: 3-col grid, rightmost split, blue shades -->
+    <div class="logo">
+      <svg viewBox="0 0 22 17" width="30" height="23" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0"  y="0" width="6" height="17" rx="1.5" fill="#4f93f7"/>
+        <rect x="8"  y="0" width="6" height="17" rx="1.5" fill="#3070c8"/>
+        <rect x="16" y="0" width="6" height="7.5" rx="1.5" fill="#1f50a0"/>
+        <rect x="16" y="9.5" width="6" height="7.5" rx="1.5" fill="#153878"/>
+      </svg>
+    </div>
+    <h1>Scaffold</h1>
+  </div>
+  <div class="header-right">
+    <span class="mode-hint" id="mode-hint"></span>
+    <button class="mode-btn split-mode" id="mode-split"
+            title="Click a zone to toggle top/bottom split">Split</button>
+    <button class="mode-btn merge-mode" id="mode-merge"
+            title="Click two adjacent zones to merge · click merged zone to unmerge">Merge</button>
+    <div class="header-sep"></div>
+    <button class="btn btn-primary" id="apply-btn" disabled>Apply</button>
+  </div>
+</header>
+
+<div class="workspace">
+  <section class="zones-panel">
+
+    <div class="zone-area">
+      <div class="zone-grid" id="zone-grid"></div>
+      <button class="add-col-btn" id="col-add-btn" title="Add column">+</button>
+    </div>
+
+  </section>
+
+  <div class="right-col">
+    <section class="windows-panel">
+      <div class="windows-header">
+        <span class="windows-title">Open Windows</span>
+        <button class="btn-icon" id="refresh-btn" title="Refresh window list">↻</button>
+      </div>
+      <p class="windows-desc">Drag tiles into grid zones, then Apply.</p>
+      <div class="window-list" id="window-list"></div>
+    </section>
+
+    <section class="settings-panel">
+      <div class="settings-header">
+        <span class="settings-title">Settings</span>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-label">Layout Profiles</div>
+        <p class="settings-desc">Save your current window positions as a named profile and restore them any time. Profiles are stored in <code style="color:#555;font-size:10px">~/.scaffold/layouts/</code></p>
+        <div class="settings-row">
+          <input id="layout-name" class="layout-name-input" placeholder="profile name" maxlength="64">
+          <button class="profile-action" id="save-layout-btn" title="Save layout">Save</button>
+        </div>
+        <select id="layout-select" class="layout-select" title="Load a saved layout">
+          <option value="">Load profile…</option>
+        </select>
+        <span class="profile-feedback" id="profile-feedback"></span>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-label">
+          Window Gap
+          <span class="gap-value" id="gap-value-label">8px</span>
+        </div>
+        <input type="range" id="gap-slider" class="gap-slider"
+               min="0" max="32" step="1" value="8">
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────
+const state = {
+  zones:       [],
+  windows:     [],
+  assignments: {},
+  results:     {},
+};
+
+let draft          = null;
+let configMode     = 'none';  // 'none' | 'split' | 'merge'
+let mergeSelection = null;    // group index awaiting second click in merge mode
+let tileSelection  = null;    // group index pre-selected in none mode (tile-first flow)
+let currentGap     = 8;       // window gap in px (synced with server config)
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────
+async function init() {
+  await Promise.all([fetchZones(), fetchWindows(), fetchDisplay()]);
+  loadLayoutList();
+  startPing();
+}
+
+async function fetchDisplay() {
+  try {
+    const res  = await fetch('/api/display');
+    const data = await res.json();
+    currentGap = data.gap ?? 8;
+    setGapSlider(currentGap);
+  } catch {}
+}
+
+function setGapSlider(val) {
+  const slider = document.getElementById('gap-slider');
+  const label  = document.getElementById('gap-value-label');
+  if (!slider) return;
+  slider.value = val;
+  label.textContent = val + 'px';
+  // Fill track up to thumb position
+  const pct = ((val - slider.min) / (slider.max - slider.min) * 100).toFixed(1);
+  slider.style.setProperty('--pct', pct + '%');
+}
+
+async function fetchZones() {
+  const res = await fetch('/api/zones');
+  state.zones = await res.json();
+  draft = inferDraft(state.zones);
+  renderZoneGrid();
+}
+
+async function fetchWindows() {
+  showWindowSkeletons();
+  const res = await fetch('/api/windows');
+  if (res.status === 403) {
+    const data = await res.json();
+    showAccessibilityError(data.message);
+    state.windows = [];
+  } else {
+    state.windows = await res.json();
+  }
+  renderWindowList();
+}
+
+function showWindowSkeletons() {
+  const list = document.getElementById('window-list');
+  list.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('div');
+    s.className = 'win-skeleton';
+    s.innerHTML = `<div class="win-skeleton-app" style="width:${40+Math.random()*35|0}%"></div>`
+                + `<div class="win-skeleton-title" style="width:${55+Math.random()*30|0}%"></div>`;
+    list.appendChild(s);
+  }
+}
+
+async function loadLayoutList() {
+  try {
+    const res = await fetch('/api/layouts');
+    const layouts = await res.json();
+    const sel = document.getElementById('layout-select');
+    sel.innerHTML = '<option value="">load...</option>';
+    for (const l of layouts) {
+      const opt = document.createElement('option');
+      opt.value = l.name;
+      opt.textContent = l.name;
+      sel.appendChild(opt);
+    }
+  } catch {}
+}
+
+// ── Draft model ───────────────────────────────────────────────────────────
+function inferDraft(zones) {
+  const numCols = zones.length > 0 ? zones[0].num_cols : 8;
+  const seen = {};
+  for (const z of zones) {
+    const key = [...z.cols].sort((a,b)=>a-b).join(',');
+    if (!seen[key]) seen[key] = { cols: [...z.cols].sort((a,b)=>a-b), split: false };
+    if (z.rows === 'top' || z.rows === 'bottom') seen[key].split = true;
+  }
+  return { columns: numCols, groups: Object.values(seen).sort((a,b) => a.cols[0]-b.cols[0]) };
+}
+
+function zonesFromDraft({ columns, groups }) {
+  const zones = [];
+  for (const g of groups) {
+    const cMin = Math.min(...g.cols), cMax = Math.max(...g.cols);
+    const base = g.cols.length > 1 ? `col-${cMin}-${cMax}` : `col-${cMin}`;
+    if (g.split) {
+      zones.push({ name:`${base}t`, cols:g.cols, rows:'top',    num_cols:columns });
+      zones.push({ name:`${base}b`, cols:g.cols, rows:'bottom', num_cols:columns });
+    } else {
+      zones.push({ name:base,       cols:g.cols, rows:'full',   num_cols:columns });
+    }
+  }
+  return zones;
+}
+
+function renumberColumns() {
+  let col = 1;
+  for (const g of draft.groups) {
+    g.cols = Array.from({ length: g.cols.length }, (_, i) => col + i);
+    col += g.cols.length;
+  }
+  draft.columns = col - 1;
+}
+
+function groupIndexForZone(zone) {
+  const key = [...zone.cols].sort((a,b)=>a-b).join(',');
+  return draft.groups.findIndex(g => [...g.cols].sort((a,b)=>a-b).join(',') === key);
+}
+
+// ── Zone grid ─────────────────────────────────────────────────────────────
+function renderZoneGrid() {
+  const grid = document.getElementById('zone-grid');
+  grid.innerHTML = '';
+  grid.classList.toggle('mode-split', configMode === 'split');
+  grid.classList.toggle('mode-merge', configMode === 'merge');
+  grid.style.gridTemplateColumns = `repeat(${draft.columns}, 1fr)`;
+  grid.style.gridTemplateRows = '1fr 1fr';
+
+  for (const zone of state.zones) {
+    const el = document.createElement('div');
+    el.className = 'zone';
+    el.dataset.zone = zone.name;
+
+    const cMin = Math.min(...zone.cols), cMax = Math.max(...zone.cols);
+    el.style.gridColumn = `${cMin} / ${cMax + 1}`;
+    el.style.gridRow = zone.rows === 'full' ? '1 / 3'
+                     : zone.rows === 'top'  ? '1 / 2' : '2 / 3';
+
+    const groupIdx = groupIndexForZone(zone);
+    const isMerged = groupIdx >= 0 && draft.groups[groupIdx].cols.length > 1;
+
+    if (configMode === 'split' && isMerged) el.classList.add('no-interact');
+    if (configMode === 'merge') {
+      if (mergeSelection === groupIdx) el.classList.add('zone-merge-selected');
+      else if (mergeSelection !== null && Math.abs(mergeSelection - groupIdx) === 1)
+        el.classList.add('zone-merge-target');
+    }
+
+    // Delete button (top-left, hover-only)
+    const delBtn = document.createElement('button');
+    delBtn.className = 'zone-delete-btn';
+    delBtn.textContent = '×';
+    delBtn.title = draft.groups.length > 1
+      ? (isMerged ? `Remove cols ${cMin}–${cMax}` : `Remove col ${cMin}`)
+      : 'Cannot remove last column';
+    delBtn.disabled = draft.groups.length <= 1;
+    delBtn.addEventListener('click', e => { e.stopPropagation(); deleteGroup(groupIdx); });
+
+    el.innerHTML = `
+      <span class="zone-name">${esc(zone.name)}</span>
+      <span class="zone-window" id="zw-${zone.name}"></span>
+      <span class="zone-status" id="zs-${zone.name}"></span>`;
+    el.insertBefore(delBtn, el.firstChild);
+
+    el.addEventListener('dragover', e => {
+      e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+      el.classList.add('dragover');
+    });
+    el.addEventListener('dragleave', e => {
+      if (!el.contains(e.relatedTarget)) el.classList.remove('dragover');
+    });
+    el.addEventListener('drop', e => {
+      e.preventDefault(); el.classList.remove('dragover');
+      const wid = e.dataTransfer.getData('text/plain');
+      if (wid) assign(wid, zone.name);
+    });
+    el.addEventListener('dblclick', () => {
+      if (configMode === 'none' && state.assignments[zone.name]) unassign(zone.name);
+    });
+    el.addEventListener('click', () => handleZoneClick(zone, groupIdx, isMerged));
+
+    grid.appendChild(el);
+  }
+  syncZoneUI();
+}
+
+function handleZoneClick(zone, groupIdx, isMerged) {
+  // ── None mode: pre-select a tile for the tile-first flow ──────────────────
+  if (configMode === 'none') {
+    tileSelection = (tileSelection === groupIdx) ? null : groupIdx;
+    syncZoneInteraction();
+    return;
+  }
+
+  // ── Split mode: toggle rows on any zone (merged or not) ───────────────────
+  if (configMode === 'split') {
+    draft.groups[groupIdx].split = !draft.groups[groupIdx].split;
+    setConfigMode('none');
+    applyDraftToGrid();
+    return;
+  }
+
+  // ── Merge mode ─────────────────────────────────────────────────────────────
+  if (mergeSelection === null) {
+    mergeSelection = groupIdx;
+    _updateModeUI();
+  } else if (mergeSelection === groupIdx) {
+    // Same group: unmerge if horizontally merged, unsplit if vertically split,
+    // otherwise just deselect.
+    if (isMerged) {
+      unmergeGroup(groupIdx); return;
+    } else if (draft.groups[groupIdx].split) {
+      draft.groups[groupIdx].split = false;
+      mergeSelection = null;
+      setConfigMode('none');
+      applyDraftToGrid();
+      return;
+    }
+    mergeSelection = null;
+  } else if (Math.abs(mergeSelection - groupIdx) === 1) {
+    mergeGroups(Math.min(mergeSelection, groupIdx), Math.max(mergeSelection, groupIdx));
+    return;
+  } else {
+    mergeSelection = groupIdx;
+    _updateModeUI();
+  }
+  syncZoneInteraction();
+}
+
+function syncZoneInteraction() {
+  const grid = document.getElementById('zone-grid');
+  if (!grid) return;
+  grid.classList.toggle('mode-split', configMode === 'split');
+  grid.classList.toggle('mode-merge', configMode === 'merge');
+
+  _updateModeUI();  // keep button labels / hint in sync
+
+  for (const zone of state.zones) {
+    const el = document.querySelector(`.zone[data-zone="${zone.name}"]`);
+    if (!el) continue;
+    const gIdx = groupIndexForZone(zone);
+
+    el.classList.toggle('zone-tile-selected',
+      configMode === 'none' && tileSelection === gIdx);
+    el.classList.toggle('zone-merge-selected',
+      configMode === 'merge' && mergeSelection === gIdx);
+    el.classList.toggle('zone-merge-target',
+      configMode === 'merge' && mergeSelection !== null
+      && mergeSelection !== gIdx
+      && Math.abs(mergeSelection - gIdx) === 1);
+  }
+}
+
+function mergeGroups(loIdx, hiIdx) {
+  const a = draft.groups[loIdx], b = draft.groups[hiIdx];
+  draft.groups.splice(loIdx, 2, {
+    cols: [...a.cols, ...b.cols].sort((x,y)=>x-y), split: false,
+  });
+  mergeSelection = null;
+  setConfigMode('none');
+  applyDraftToGrid();
+}
+
+function unmergeGroup(idx) {
+  const singles = draft.groups[idx].cols.map(c => ({ cols:[c], split:false }));
+  draft.groups.splice(idx, 1, ...singles);
+  mergeSelection = null;
+  setConfigMode('none');
+  applyDraftToGrid();
+}
+
+function addGroup() {
+  draft.groups.push({ cols:[draft.columns + 1], split:false });
+  draft.columns += 1;
+  applyDraftToGrid();
+}
+
+function deleteGroup(idx) {
+  if (draft.groups.length <= 1) return;
+  draft.groups.splice(idx, 1);
+  renumberColumns();
+  mergeSelection = null;
+  applyDraftToGrid();
+}
+
+function setConfigMode(mode) {
+  // ── Tile-first shortcut ────────────────────────────────────────────────────
+  if (tileSelection !== null) {
+    const g = draft.groups[tileSelection];
+
+    if (mode === 'split') {
+      // Toggle rows on selected tile — works for single cols and merged spans
+      g.split = !g.split;
+      tileSelection = null;
+      configMode = 'none';
+      _updateModeUI();
+      applyDraftToGrid();
+      return;
+    }
+
+    if (mode === 'merge') {
+      if (g.cols.length > 1) {
+        // Already merged → unmerge immediately
+        const saved = tileSelection;
+        tileSelection = null;
+        unmergeGroup(saved);
+        return;
+      }
+      // Not merged → enter merge mode with tile pre-loaded as first pick
+      mergeSelection = tileSelection;
+      tileSelection  = null;
+      configMode = 'merge';
+      _updateModeUI();
+      syncZoneInteraction();
+      return;
+    }
+  }
+
+  // ── Normal toggle ──────────────────────────────────────────────────────────
+  configMode    = (configMode === mode) ? 'none' : mode;
+  mergeSelection = null;
+  tileSelection  = null;
+  _updateModeUI();
+  syncZoneInteraction();
+}
+
+function _updateModeUI() {
+  const splitBtn = document.getElementById('mode-split');
+  const mergeBtn = document.getElementById('mode-merge');
+  const hint     = document.getElementById('mode-hint');
+
+  // When a tile is pre-selected, relabel buttons and cue both in blue
+  if (configMode === 'none' && tileSelection !== null) {
+    const g = draft.groups[tileSelection];
+    splitBtn.textContent = g.split           ? 'Unsplit' : 'Split';
+    mergeBtn.textContent = g.cols.length > 1 ? 'Unmerge' : 'Merge';
+    // Active (full blue) on whichever action reverses current state; cued on the other
+    splitBtn.classList.toggle('active', g.split);
+    splitBtn.classList.toggle('split-mode', g.split);
+    splitBtn.classList.toggle('cued', !g.split);
+    mergeBtn.classList.toggle('active', g.cols.length > 1);
+    mergeBtn.classList.toggle('merge-mode', g.cols.length > 1);
+    mergeBtn.classList.toggle('cued', g.cols.length <= 1);
+    hint.className = 'mode-hint';
+    return;
+  }
+
+  // Default labels — clear all special states
+  splitBtn.textContent = 'Split';
+  mergeBtn.textContent = 'Merge';
+  splitBtn.classList.remove('cued');
+  mergeBtn.classList.remove('cued');
+  splitBtn.classList.toggle('active', configMode === 'split');
+  splitBtn.classList.toggle('split-mode', configMode === 'split');
+  mergeBtn.classList.toggle('active', configMode === 'merge');
+  mergeBtn.classList.toggle('merge-mode', configMode === 'merge');
+
+  if (configMode === 'split') {
+    hint.textContent = 'Click any zone to split/unsplit rows';
+    hint.className = 'mode-hint visible';
+  } else if (configMode === 'merge') {
+    hint.textContent = mergeSelection !== null
+      ? 'Now click an adjacent zone'
+      : 'Click a zone, then an adjacent zone to merge';
+    hint.className = 'mode-hint visible';
+  } else {
+    hint.className = 'mode-hint';
+  }
+}
+
+function applyDraftToGrid() {
+  tileSelection  = null;
+  mergeSelection = null;
+  state.zones = zonesFromDraft(draft);
+  state.assignments = {};
+  state.results = {};
+  renderZoneGrid();
+  syncApplyButton();
+  saveGridConfig();
+}
+
+function saveGridConfig() {
+  fetch('/api/save-grid-config', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ columns: draft.columns, groups: draft.groups, gap: currentGap }),
+  }).catch(() => {});
+}
+
+// ── Window list ───────────────────────────────────────────────────────────
+function renderWindowList() {
+  const list = document.getElementById('window-list');
+  list.innerHTML = '';
+  if (state.windows.length === 0) {
+    list.innerHTML = '<div class="empty-state">No windows found<br>'
+      + '<span style="font-size:10px">Try ↻ Refresh</span></div>';
+    return;
+  }
+  for (const win of state.windows) {
+    const card = document.createElement('div');
+    card.className = 'win-card'; card.draggable = true; card.dataset.wid = win.wid;
+    const title = win.title.length > 50 ? win.title.slice(0,48)+'…' : win.title;
+    card.innerHTML = `<div class="win-app">${esc(win.app)}</div>`
+      + (title ? `<div class="win-title">${esc(title)}</div>` : '');
+    card.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', win.wid);
+      e.dataTransfer.effectAllowed = 'move';
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    list.appendChild(card);
+  }
+  syncWindowUI();
+}
+
+// ── Assignments ───────────────────────────────────────────────────────────
+function assign(wid, zoneName) {
+  for (const [z, w] of Object.entries(state.assignments))
+    if (w === wid) delete state.assignments[z];
+  state.assignments[zoneName] = wid;
+  syncZoneUI(); syncWindowUI(); syncApplyButton();
+}
+function unassign(zoneName) {
+  delete state.assignments[zoneName];
+  syncZoneUI(); syncWindowUI(); syncApplyButton();
+}
+
+// ── UI sync ───────────────────────────────────────────────────────────────
+function syncZoneUI() {
+  for (const zone of state.zones) {
+    const el = document.querySelector(`.zone[data-zone="${zone.name}"]`);
+    if (!el) continue;
+    const wid = state.assignments[zone.name];
+    const win = wid ? state.windows.find(w => w.wid === wid) : null;
+    el.classList.toggle('assigned', !!win);
+    const r = state.results[zone.name];
+    el.classList.toggle('result-error', r?.status === 'error');
+    const zw = document.getElementById(`zw-${zone.name}`);
+    if (zw) zw.textContent = win
+      ? (win.title
+          ? `${win.app} — ${win.title.slice(0,20)}${win.title.length>20?'…':''}`
+          : win.app)
+      : '';
+    const zs = document.getElementById(`zs-${zone.name}`);
+    if (zs) {
+      if      (r?.status === 'ok')    { zs.textContent='✓'; zs.className='zone-status ok';  zs.title=''; }
+      else if (r?.status === 'error') { zs.textContent='✗'; zs.className='zone-status err'; zs.title=r.msg||''; }
+      else                            { zs.textContent='';  zs.className='zone-status';     zs.title=''; }
+    }
+  }
+}
+
+function syncWindowUI() {
+  const assigned = new Set(Object.values(state.assignments));
+  for (const c of document.querySelectorAll('.win-card'))
+    c.classList.toggle('assigned', assigned.has(c.dataset.wid));
+}
+
+function syncApplyButton() {
+  const btn = document.getElementById('apply-btn');
+  const n = Object.keys(state.assignments).length;
+  btn.disabled = n === 0;
+  btn.textContent = n > 0 ? `Apply (${n})` : 'Apply';
+}
+
+// ── Apply ─────────────────────────────────────────────────────────────────
+async function applyAssignments() {
+  const btn = document.getElementById('apply-btn');
+  btn.classList.add('btn-applying'); btn.disabled = true;
+
+  const assignedZones = Object.keys(state.assignments);
+  for (const z of assignedZones) {
+    const el = document.querySelector(`.zone[data-zone="${z}"]`);
+    if (el) { el.classList.remove('result-error'); el.classList.add('zone-applying'); }
+  }
+
+  const payload = Object.entries(state.assignments).map(([zone, wid]) => {
+    const z = state.zones.find(z => z.name === zone);
+    return { zone, wid, cols:z?.cols, rows:z?.rows, num_cols:z?.num_cols };
+  });
+
+  try {
+    const res = await fetch('/api/apply', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const results = await res.json();
+    state.results = {};
+    for (const r of results) state.results[r.zone] = r;
+
+    for (const r of results) {
+      const el = document.querySelector(`.zone[data-zone="${r.zone}"]`);
+      if (el) {
+        el.classList.remove('zone-applying');
+        el.classList.add(r.status === 'ok' ? 'flash-ok' : 'flash-err');
+        setTimeout(() => el.classList.remove('flash-ok', 'flash-err'), 900);
+      }
+    }
+    syncZoneUI();
+    const ok = results.filter(r => r.status === 'ok').length;
+    btn.classList.remove('btn-applying');
+    btn.textContent = `Applied (${ok}/${results.length})`;
+    btn.disabled = false;
+  } catch (e) {
+    for (const z of assignedZones) {
+      const el = document.querySelector(`.zone[data-zone="${z}"]`);
+      if (el) el.classList.remove('zone-applying');
+    }
+    btn.classList.remove('btn-applying'); btn.textContent = 'Apply'; btn.disabled = false;
+    console.error(e);
+  }
+}
+
+// ── Layout save / load ────────────────────────────────────────────────────
+async function saveLayout() {
+  const name = document.getElementById('layout-name').value.trim();
+  if (!name) { document.getElementById('layout-name').focus(); return; }
+  const fb = document.getElementById('profile-feedback');
+  try {
+    const res = await fetch('/api/save-layout', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    fb.textContent = '✓ saved'; fb.className = 'profile-feedback ok';
+    await loadLayoutList();
+    setTimeout(() => { fb.textContent = ''; }, 2500);
+  } catch (e) {
+    fb.textContent = '✗ failed'; fb.className = 'profile-feedback err';
+    setTimeout(() => { fb.textContent = ''; }, 2500);
+  }
+}
+
+async function loadLayout(name) {
+  const fb = document.getElementById('profile-feedback');
+  try {
+    const res = await fetch('/api/load-layout', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    document.getElementById('layout-name').value = name;
+    fb.textContent = `✓ loaded`; fb.className = 'profile-feedback ok';
+    setTimeout(() => { fb.textContent = ''; }, 2500);
+  } catch (e) {
+    fb.textContent = '✗ ' + (e.message || 'failed'); fb.className = 'profile-feedback err';
+    setTimeout(() => { fb.textContent = ''; }, 2500);
+  }
+}
+
+// ── Accessibility error ───────────────────────────────────────────────────
+function showAccessibilityError(msg) {
+  document.getElementById('ax-banner')?.remove();
+  const b = document.createElement('div'); b.id = 'ax-banner';
+  b.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:999;';
+  b.innerHTML = `<div style="background:#1e1e1e;border:1px solid #4a4a4a;border-radius:10px;padding:24px 28px;max-width:400px;text-align:center;">
+    <div style="font-weight:600;color:#ccc;margin-bottom:10px;">Accessibility Permission Required</div>
+    <div style="font-size:12px;color:#777;white-space:pre-line;line-height:1.7;">${esc(msg)}</div>
+    <button onclick="document.getElementById('ax-banner').remove()"
+      style="margin-top:16px;background:#4f93f7;border:none;color:#fff;border-radius:6px;padding:6px 18px;cursor:pointer;font-size:12px;font-weight:600;">
+      OK</button></div>`;
+  document.body.appendChild(b);
+}
+
+// ── Refresh / ping ────────────────────────────────────────────────────────
+async function refresh() {
+  state.assignments = {}; state.results = {};
+  await fetchWindows(); syncZoneUI(); syncApplyButton();
+}
+function startPing() {
+  setInterval(async () => { try { await fetch('/api/ping'); } catch {} }, 10_000);
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Event wiring ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  document.getElementById('mode-split').addEventListener('click', () => setConfigMode('split'));
+  document.getElementById('mode-merge').addEventListener('click', () => setConfigMode('merge'));
+  document.getElementById('col-add-btn').addEventListener('click', addGroup);
+  document.getElementById('apply-btn').addEventListener('click', applyAssignments);
+  document.getElementById('save-layout-btn').addEventListener('click', saveLayout);
+  document.getElementById('layout-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveLayout();
+  });
+  document.getElementById('layout-select').addEventListener('change', async e => {
+    const name = e.target.value;
+    e.target.value = '';
+    if (name) await loadLayout(name);
+  });
+  document.getElementById('refresh-btn').addEventListener('click', refresh);
+
+  // Gap slider
+  const gapSlider = document.getElementById('gap-slider');
+  gapSlider.addEventListener('input', () => {
+    currentGap = parseInt(gapSlider.value, 10);
+    setGapSlider(currentGap);
+  });
+  gapSlider.addEventListener('change', () => {
+    saveGridConfig();  // persist on release
+  });
+});
+</script>
+</body>
+</html>

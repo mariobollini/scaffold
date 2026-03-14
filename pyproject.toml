@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scaffold"
+version = "0.1.0"
+description = "Ultrawide window manager for macOS"
+requires-python = ">=3.11"
+dependencies = [
+    "pyobjc-framework-Cocoa>=10.0",
+    "pyobjc-framework-ApplicationServices>=10.0",
+    "PyYAML>=6.0",
+    "Flask>=3.0",
+    "waitress>=3.0",
+]
+
+[project.scripts]
+scaffold = "scaffold.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["scaffold*"]

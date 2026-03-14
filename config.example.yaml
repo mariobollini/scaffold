@@ -1,0 +1,25 @@
+# Scaffold config — copy to ~/.scaffold/config.yaml
+
+display:
+  name: "DELL U4924DW"   # matched (substring) against NSScreen.localizedName
+  columns: 8             # grid column count: 6 or 8
+  gap: 8                 # pixels between zone edges
+  margin: 0              # pixels inset from screen edges
+
+# Zone definitions
+# cols: list of column numbers (1-indexed). [1,2] = span cols 1 & 2.
+# rows: full | top | bottom
+zones:
+  # ── Left two-column blocks (agent terminal windows) ──
+  agent-1:   { cols: [1, 2], rows: full   }   # agents 1-2
+  agent-2:   { cols: [3, 4], rows: full   }   # agents 3-4
+
+  # ── Half-height splits (individual agent windows) ──
+  agent-3t:  { cols: [5],    rows: top    }   # agent 5 top
+  agent-3b:  { cols: [5],    rows: bottom }   # agent 5 bottom
+  agent-4t:  { cols: [6],    rows: top    }   # agent 6 top
+  agent-4b:  { cols: [6],    rows: bottom }   # agent 6 bottom
+
+  # ── Right columns ──
+  browser:   { cols: [7],    rows: full   }   # web preview / Claude.ai
+  comms:     { cols: [8],    rows: full   }   # Gmail / Meet / Drive
