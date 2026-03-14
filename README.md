@@ -2,6 +2,8 @@
 
 **Tame window chaos on an ultrawide monitor.**
 
+![Scaffold organizer](docs/screenshot.png)
+
 If you're running many AI agents, terminals, browsers, and monitoring tools simultaneously on a large display, Scaffold keeps every window exactly where it belongs. Define a column grid, drag windows into zones, hit Apply — and your whole workspace snaps into place in one shot. Save it as a named profile and restore it any time.
 
 ---

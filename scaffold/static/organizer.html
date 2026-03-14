@@ -181,12 +181,12 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
   background: #252525 !important;
 }
 
-/* Delete button — top-left, dim by default, bright on hover */
+/* Delete button — top-left, bold minus, dim by default, red on hover */
 .zone-delete-btn {
-  position: absolute; top: 5px; left: 5px;
-  width: 18px; height: 18px;
-  background: transparent; border: none; border-radius: 3px;
-  color: #484848; cursor: pointer; font-size: 13px;
+  position: absolute; top: 4px; left: 4px;
+  width: 26px; height: 26px;
+  background: transparent; border: none; border-radius: 4px;
+  color: #606060; cursor: pointer; font-size: 22px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   padding: 0; line-height: 1; z-index: 2;
   transition: color 0.1s, background 0.1s;
@@ -327,6 +327,7 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
             title="Click a zone to toggle top/bottom split">Split</button>
     <button class="mode-btn merge-mode" id="mode-merge"
             title="Click two adjacent zones to merge · click merged zone to unmerge">Merge</button>
+    <div id="header-grid-spacer" style="flex-shrink:0"></div>
     <div class="header-sep"></div>
     <button class="btn btn-primary" id="apply-btn" disabled>Apply</button>
   </div>
@@ -544,7 +545,7 @@ function renderZoneGrid() {
     // Delete button (top-left, hover-only)
     const delBtn = document.createElement('button');
     delBtn.className = 'zone-delete-btn';
-    delBtn.textContent = '×';
+    delBtn.textContent = '−';
     delBtn.title = draft.groups.length > 1
       ? (isMerged ? `Remove cols ${cMin}–${cMax}` : `Remove col ${cMin}`)
       : 'Cannot remove last column';
@@ -577,6 +578,7 @@ function renderZoneGrid() {
     grid.appendChild(el);
   }
   syncZoneUI();
+  alignModeButtons();
 }
 
 function handleZoneClick(zone, groupIdx, isMerged) {
@@ -958,6 +960,31 @@ function showAccessibilityError(msg) {
   document.body.appendChild(b);
 }
 
+// ── Align Split/Merge over the zone grid ──────────────────────────────────
+// header uses justify-content:space-between so header-right is anchored at
+// the right edge. Growing header-right's content pushes its left edge left,
+// which slides Split/Merge left. We need spacer = (mergeRight - gridRight).
+function alignModeButtons() {
+  const grid   = document.getElementById('zone-grid');
+  const merge  = document.getElementById('mode-merge');
+  const spacer = document.getElementById('header-grid-spacer');
+  if (!grid || !merge || !spacer) return;
+
+  // Step 1: reset spacer so measurements aren't skewed by a previous call.
+  spacer.style.width = '0';
+
+  // Step 2: wait for that reset to paint, then measure and set.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    // Use the zone-grid's right edge as the alignment target.
+    // The add-col-btn sits outside the grid, so grid.getBoundingClientRect().right
+    // is exactly the right edge of the rightmost column.
+    const gridRight  = grid.getBoundingClientRect().right;
+    const mergeRight = merge.getBoundingClientRect().right;
+    const overshoot  = mergeRight - gridRight;
+    spacer.style.width = Math.max(0, overshoot) + 'px';
+  }));
+}
+
 // ── Refresh / ping ────────────────────────────────────────────────────────
 async function refresh() {
   state.assignments = {}; state.results = {};
@@ -991,6 +1018,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (name) await loadLayout(name);
   });
   document.getElementById('refresh-btn').addEventListener('click', refresh);
+  window.addEventListener('resize', alignModeButtons);
 
   // Gap slider
   const gapSlider = document.getElementById('gap-slider');
