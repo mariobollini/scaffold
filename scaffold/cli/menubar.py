@@ -152,7 +152,7 @@ def cmd_menubar(port: int = 7890) -> None:
 
             # Open Organizer
             open_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
-                "Open Organizer", "openOrganizer:", ""
+                "Organize", "openOrganizer:", ""
             )
             open_item.setTarget_(self)
             menu.addItem_(open_item)
@@ -173,8 +173,9 @@ def cmd_menubar(port: int = 7890) -> None:
 
             # Quit
             quit_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
-                "Quit Scaffold", "terminate:", ""
+                "Quit", "terminate:", ""
             )
+            quit_item.setImage_(None)  # Tahoe auto-assigns a symbol; strip it
             menu.addItem_(quit_item)
 
             item.setMenu_(menu)

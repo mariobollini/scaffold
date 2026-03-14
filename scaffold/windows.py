@@ -114,7 +114,14 @@ def list_windows() -> list[dict]:
     results = []
     workspace = NSWorkspace.sharedWorkspace()
 
+    # Bundle IDs of system UI agents that are not real user windows.
+    _EXCLUDED_BUNDLES = {
+        "com.apple.notificationcenterui",  # Notification Center (shows on layer 0 in Tahoe)
+    }
+
     for app in workspace.runningApplications():
+        if app.bundleIdentifier() in _EXCLUDED_BUNDLES:
+            continue
         pid = app.processIdentifier()
         app_name = app.localizedName() or ""
         try:
