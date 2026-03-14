@@ -133,6 +133,14 @@ The organizer UI writes back to this file automatically when you add/remove colu
 ## CLI reference
 
 ```bash
+# Start the menu bar app (recommended for daily use)
+scaffold menubar                            # grid icon in menu bar; no Dock icon
+scaffold menubar --port 7891               # use a custom port (default: 7890)
+
+# Open the organizer in your browser (one-off / terminal session)
+scaffold organize                           # starts server + opens browser
+scaffold organize --port 7891              # use a custom port
+
 # Snap a window to a named zone
 scaffold snap col-1                         # frontmost window
 scaffold snap col-2 Terminal                # frontmost Terminal window
