@@ -80,7 +80,7 @@ def compute_zone_rect(
     # Flip to AX coordinate space
     ax_y = primary_height - ns_y - h
 
-    return (int(x), int(ax_y), int(w), int(h))
+    return (round(x), round(ax_y), round(w), round(h))
 
 
 def get_zone_rect(zone_name: str, config: dict) -> tuple[int, int, int, int]:

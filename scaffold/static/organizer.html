@@ -18,7 +18,7 @@ body {
 header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 8px 16px; background: #1f1f1f;
-  border-bottom: 1px solid #2e2e2e; flex-shrink: 0; gap: 10px;
+  border-bottom: 1px solid #3a3a3a; flex-shrink: 0; gap: 10px;
 }
 .header-left  { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
@@ -40,22 +40,22 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
   flex: 1; min-height: 0; overflow: hidden;
 }
 .settings-panel {
-  flex-shrink: 0; border-top: 1px solid #2e2e2e;
+  flex-shrink: 0; border-top: 1px solid #3a3a3a;
   padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 14px;
 }
 .settings-header { display: flex; align-items: center; flex-shrink: 0; }
 .settings-title {
   font-size: 12px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.07em; color: #777;
+  letter-spacing: 0.07em; color: #aaa;
 }
 
 .settings-section { display: flex; flex-direction: column; gap: 7px; }
 .settings-section-label {
   font-size: 10px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.06em; color: #555;
+  letter-spacing: 0.06em; color: #888;
   display: flex; align-items: center; justify-content: space-between;
 }
-.settings-desc { font-size: 11px; color: #3a3a3a; line-height: 1.55; }
+.settings-desc { font-size: 11px; color: #666; line-height: 1.55; }
 .settings-row  { display: flex; gap: 5px; }
 
 .layout-name-input {
@@ -103,14 +103,14 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
   transition: background 0.1s;
 }
 .gap-slider::-webkit-slider-thumb:hover { background: #7ab8ff; }
-.gap-value { font-size: 10px; color: #555; font-variant-numeric: tabular-nums; }
+.gap-value { font-size: 10px; color: #888; font-variant-numeric: tabular-nums; }
 
 /* ── Main workspace ── */
 .workspace { display: flex; flex: 1; overflow: hidden; min-height: 0; }
 
 .zones-panel {
   flex: 1; display: flex; flex-direction: column;
-  padding: 12px 16px 16px; border-right: 1px solid #2e2e2e;
+  padding: 12px 16px 16px; border-right: 1px solid #3a3a3a;
   overflow: hidden; min-width: 0;
 }
 .windows-panel {
@@ -121,7 +121,7 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
 }
 .windows-title {
   font-size: 12px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.07em; color: #777;
+  letter-spacing: 0.07em; color: #aaa;
 }
 .btn-icon {
   background: transparent; border: none; color: #555; cursor: pointer;
@@ -130,7 +130,7 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
 }
 .btn-icon:hover { color: #ccc; background: #2a2a2a; }
 .windows-desc {
-  font-size: 11px; color: #3e3e3e; line-height: 1.6; flex-shrink: 0;
+  font-size: 11px; color: #666; line-height: 1.6; flex-shrink: 0;
 }
 
 /* ── Mode buttons (in header) ── */
@@ -156,7 +156,7 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
 
 .add-col-btn {
   width: 26px; flex-shrink: 0;
-  background: transparent; border: 1px dashed #3a3a3a;
+  background: transparent; border: 1px dashed #555;
   border-radius: 6px; color: #555; cursor: pointer;
   font-size: 18px; display: flex; align-items: center; justify-content: center;
   transition: color 0.12s, border-color 0.12s;
@@ -166,7 +166,7 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
 
 /* ── Zone tiles ── */
 .zone {
-  background: #1e1e1e; border: 2px dashed #2c2c2c; border-radius: 8px;
+  background: #1e1e1e; border: 2px dashed #484848; border-radius: 8px;
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; padding: 8px 6px;
   transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
@@ -240,13 +240,13 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
 
 /* Zone text */
 .zone-name {
-  font-size: 14px; font-weight: 600; color: #4a4a4a;
+  font-size: 21px; font-weight: 600; color: #909090;
   text-align: center; line-height: 1.3;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
 }
-.zone.assigned .zone-name { color: #5a90c0; }
+.zone.assigned .zone-name { color: #7ab8ff; }
 .zone-window {
-  font-size: 12px; color: #4a7aaa; text-align: center; margin-top: 4px;
+  font-size: 12px; color: #6a9ac8; text-align: center; margin-top: 4px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
   line-height: 1.3;
 }
@@ -265,7 +265,7 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
 .window-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
 .win-card {
-  background: #222; border: 1px solid #2e2e2e; border-radius: 7px;
+  background: #222; border: 1px solid #3d3d3d; border-radius: 7px;
   padding: 9px 11px; cursor: grab; user-select: none;
   transition: border-color 0.12s, background 0.12s, opacity 0.15s; flex-shrink: 0;
 }
@@ -274,7 +274,7 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
 .win-card.dragging { opacity: 0.35; }
 .win-card.assigned { opacity: 0.35; }
 .win-app   { font-size: 12px; font-weight: 600; color: #ccc; line-height: 1.3; }
-.win-title { font-size: 11px; color: #555; margin-top: 2px; line-height: 1.3;
+.win-title { font-size: 11px; color: #888; margin-top: 2px; line-height: 1.3;
              white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .empty-state { color: #3a3a3a; font-size: 12px; text-align: center; margin-top: 20px; line-height: 1.8; }
 
@@ -765,11 +765,38 @@ function _updateModeUI() {
   }
 }
 
+// Carry assignments forward across a layout change by matching zones on col overlap.
+// e.g. col-1 → col-1t keeps the assignment; col-1t + col-1b → col-1 keeps one of them.
+function preserveAssignments(oldAssignments, oldZones, newZones) {
+  const newAssignments = {};
+  const usedWids = new Set();
+  for (const newZone of newZones) {
+    const newColSet = new Set(newZone.cols);
+    let best = null, bestScore = -1;
+    for (const oldZone of oldZones) {
+      const wid = oldAssignments[oldZone.name];
+      if (!wid) continue;
+      const overlap = oldZone.cols.filter(c => newColSet.has(c)).length;
+      if (overlap === 0) continue;
+      // Prefer same row type; break ties by col overlap count
+      const score = overlap * 10 + (oldZone.rows === newZone.rows ? 2 : 0);
+      if (score > bestScore) { bestScore = score; best = oldZone; }
+    }
+    if (best) {
+      const wid = oldAssignments[best.name];
+      if (!usedWids.has(wid)) { newAssignments[newZone.name] = wid; usedWids.add(wid); }
+    }
+  }
+  return newAssignments;
+}
+
 function applyDraftToGrid() {
   tileSelection  = null;
   mergeSelection = null;
+  const oldZones = state.zones;
+  const oldAssignments = { ...state.assignments };
   state.zones = zonesFromDraft(draft);
-  state.assignments = {};
+  state.assignments = preserveAssignments(oldAssignments, oldZones, state.zones);
   state.results = {};
   renderZoneGrid();
   syncApplyButton();
