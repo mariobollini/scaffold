@@ -35,8 +35,13 @@ def compute_zone_rect(
     """
     Return (ax_x, ax_y, width, height) for one zone.
 
-    screen_frame    NSRect from NSScreen.frame()
-    primary_height  Height of the primary screen (for NSScreen→AX y-flip)
+    screen_frame    NSRect from NSScreen.visibleFrame() — excludes menu bar and
+                    dock so windows are never clamped by macOS on placement.
+                    (Use visibleFrame, NOT frame; frame includes the menu bar,
+                    which causes the top split zone to be pushed down by ~38px
+                    and overlap the bottom zone by roughly one title-bar height.)
+    primary_height  Height of the primary screen from NSScreen.frame() — used
+                    only for the NSScreen→AX y-flip; must stay as full height.
     num_cols        Total number of columns in the grid
     gap             Pixels between zone edges
     margin          Pixels inset from screen edges
@@ -103,7 +108,7 @@ def get_zone_rect(zone_name: str, config: dict) -> tuple[int, int, int, int]:
     display_name = display_cfg.get("name")
 
     screen = _find_screen(display_name)
-    screen_frame = screen.frame()
+    screen_frame = screen.visibleFrame()
     primary_height = NSScreen.mainScreen().frame().size.height
 
     return compute_zone_rect(zone_cfg, screen_frame, primary_height, num_cols, gap, margin)

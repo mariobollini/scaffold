@@ -119,7 +119,7 @@ def api_apply():
     margin = display_cfg.get("margin", 0)
     display_name = display_cfg.get("name")
     screen = _find_screen(display_name)
-    screen_frame = screen.frame()
+    screen_frame = screen.visibleFrame()   # excludes menu bar & dock
     primary_height = NSScreen.mainScreen().frame().size.height
 
     for item in assignments:
