@@ -148,6 +148,11 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
 /* mode hint — inline in header, hidden when no mode active */
 .mode-hint { font-size: 10px; color: #4f93f7; white-space: nowrap; display: none; }
 .mode-hint.visible { display: block; }
+.mode-hint.warn { color: #e07040; }
+
+/* Reset button */
+.mode-btn.reset-mode:hover:not(.active) { border-color: #604040; color: #c08070; }
+.mode-btn.reset-mode.pending { background: #2a1a14; border-color: #c05030; color: #e07050; }
 
 /* ── Zone area (grid + add-col button) ── */
 .zone-area { display: flex; gap: 5px; flex: 1; min-height: 0; }
@@ -327,6 +332,8 @@ h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;
             title="Click a zone to toggle top/bottom split">Split</button>
     <button class="mode-btn merge-mode" id="mode-merge"
             title="Click two adjacent zones to merge · click merged zone to unmerge">Merge</button>
+    <button class="mode-btn reset-mode" id="mode-reset"
+            title="Reset all splits and merges to individual columns">Reset</button>
     <div id="header-grid-spacer" style="flex-shrink:0"></div>
     <div class="header-sep"></div>
     <button class="btn btn-primary" id="apply-btn" disabled>Apply</button>
@@ -397,6 +404,7 @@ let configMode     = 'none';  // 'none' | 'split' | 'merge'
 let mergeSelection = null;    // group index awaiting second click in merge mode
 let tileSelection  = null;    // group index pre-selected in none mode (tile-first flow)
 let currentGap     = 8;       // window gap in px (synced with server config)
+let resetPending   = false;   // true after first Reset click, awaiting confirmation
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────
 async function init() {
@@ -584,6 +592,7 @@ function renderZoneGrid() {
 function handleZoneClick(zone, groupIdx, isMerged) {
   // ── None mode: pre-select a tile for the tile-first flow ──────────────────
   if (configMode === 'none') {
+    resetPending = false;
     tileSelection = (tileSelection === groupIdx) ? null : groupIdx;
     syncZoneInteraction();
     return;
@@ -714,6 +723,7 @@ function setConfigMode(mode) {
   }
 
   // ── Normal toggle ──────────────────────────────────────────────────────────
+  resetPending   = false;
   configMode    = (configMode === mode) ? 'none' : mode;
   mergeSelection = null;
   tileSelection  = null;
@@ -721,10 +731,40 @@ function setConfigMode(mode) {
   syncZoneInteraction();
 }
 
+function handleResetClick() {
+  if (resetPending) {
+    // Confirmed — flatten every group to individual unsplit columns
+    resetPending = false;
+    const allCols = draft.groups.flatMap(g => g.cols);
+    draft.groups = allCols.map(c => ({ cols: [c], split: false }));
+    renumberColumns();
+    applyDraftToGrid();
+    return;
+  }
+  // First click — cancel any active mode and wait for confirmation
+  configMode = 'none'; mergeSelection = null; tileSelection = null;
+  resetPending = true;
+  _updateModeUI();
+  syncZoneInteraction();
+}
+
 function _updateModeUI() {
   const splitBtn = document.getElementById('mode-split');
   const mergeBtn = document.getElementById('mode-merge');
+  const resetBtn = document.getElementById('mode-reset');
   const hint     = document.getElementById('mode-hint');
+
+  // Reset pending — show confirmation prompt, dim other buttons
+  if (resetPending) {
+    hint.textContent = 'Click Reset again to confirm — all splits and merges will be cleared';
+    hint.className = 'mode-hint visible warn';
+    resetBtn.classList.add('pending');
+    splitBtn.classList.remove('active', 'split-mode', 'cued');
+    mergeBtn.classList.remove('active', 'merge-mode', 'cued');
+    splitBtn.textContent = 'Split'; mergeBtn.textContent = 'Merge';
+    return;
+  }
+  resetBtn.classList.remove('pending');
 
   // When a tile is pre-selected, relabel buttons and cue both in blue
   if (configMode === 'none' && tileSelection !== null) {
@@ -1033,6 +1073,7 @@ document.addEventListener('DOMContentLoaded', () => {
   init();
   document.getElementById('mode-split').addEventListener('click', () => setConfigMode('split'));
   document.getElementById('mode-merge').addEventListener('click', () => setConfigMode('merge'));
+  document.getElementById('mode-reset').addEventListener('click', handleResetClick);
   document.getElementById('col-add-btn').addEventListener('click', addGroup);
   document.getElementById('apply-btn').addEventListener('click', applyAssignments);
   document.getElementById('save-layout-btn').addEventListener('click', saveLayout);
