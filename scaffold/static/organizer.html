@@ -735,6 +735,7 @@ function handleResetClick() {
   if (resetPending) {
     // Confirmed — flatten every group to individual unsplit columns
     resetPending = false;
+    _updateModeUI();
     const allCols = draft.groups.flatMap(g => g.cols);
     draft.groups = allCols.map(c => ({ cols: [c], split: false }));
     renumberColumns();
